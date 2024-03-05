@@ -1,5 +1,8 @@
 server:
   port: 8080
+resource:
+  server:
+    url: http://localhost:8081/
 spring:
   security:
     oauth2:
@@ -14,14 +17,18 @@ spring:
             provider: keycloak
             authorization-grant-type: client_credentials
             client-id: greetings-app
-            client-secret: aGxGX1SZZOL9HjU0VBwMo2mpH2WRHDau
+            client-secret: DB98QZKPEMc5IjOb2MRB0Re0YR8xZIw7
+
+#            Для добавления ролей в группы нужно включить системный scope: [microprofile-jwt]
+#            Непосредственно здесь для запроса или в keycloak сделать его [default]
             scope:
+              - microprofile-jwt
               - greetings
 
           greetings-app-authorization-code:
             provider: keycloak
             client-id: greetings-app
-            client-secret: aGxGX1SZZOL9HjU0VBwMo2mpH2WRHDau
+            client-secret: DB98QZKPEMc5IjOb2MRB0Re0YR8xZIw7
             scope:
               - openid
               - microprofile-jwt

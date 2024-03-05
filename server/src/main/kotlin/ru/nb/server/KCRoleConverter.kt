@@ -14,11 +14,11 @@ class KCRoleConverter : Converter<Jwt, Collection<GrantedAuthority>> {
 		val roles = realmAccess["roles"] as? List<*> ?: return emptyList()
 
 		val returnValue: MutableCollection<GrantedAuthority> = mutableListOf()
-		for (role in roles) {// проходим по всем значениям из JSON
+		for (role in roles) {
 			val roleName = role as? String ?: continue
 			// создаем объект SimpleGrantedAuthority - это дефолтная реализация GrantedAuthority
 //			returnValue.add(SimpleGrantedAuthority("ROLE_$roleName")) // префикс ROLE обязателен
-			returnValue.add(SimpleGrantedAuthority(roleName)) // префикс ROLE обязателен
+			returnValue.add(SimpleGrantedAuthority(roleName))
 		}
 		return returnValue
 	}

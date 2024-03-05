@@ -21,7 +21,7 @@ class SecurityConfig {
 	fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
 		return http
 			.authorizeHttpRequests { customizer ->
-//				customizer.anyRequest().permitAll()
+				customizer.requestMatchers("/test/**").permitAll()
 				customizer.anyRequest().hasAnyRole("MANAGER", "ADMIN")
 //				customizer.anyRequest().authenticated()
 			}

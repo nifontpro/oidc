@@ -30,7 +30,8 @@ class SpringSecurityConfig {
 			.authorizeHttpRequests { auth ->
 //				auth.anyRequest().authenticated()
 //				auth.anyRequest().permitAll()
-				auth.anyRequest().hasAnyRole("MANAGER", "ADMIN")
+				auth.anyRequest().hasRole("SYSTEM")
+//				auth.anyRequest().hasAnyRole("MANAGER", "ADMIN")
 //				auth.anyRequest().hasRole("manage-account")
 			}
 			.oauth2ResourceServer { config ->
@@ -46,9 +47,8 @@ class SpringSecurityConfig {
 					}
 					jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)
 
-					val jwtGrantedAuthoritiesConverter = JwtGrantedAuthoritiesConverter()
-
 					jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter { token ->
+						val jwtGrantedAuthoritiesConverter = JwtGrantedAuthoritiesConverter()
 						val grantedScopes = jwtGrantedAuthoritiesConverter.convert(token)
 						println("Granted scopes: $grantedScopes")
 
@@ -56,7 +56,6 @@ class SpringSecurityConfig {
 							setAuthoritiesClaimName("groups")
 							setAuthorityPrefix("")
 						}
-
 						val grantedGroups = groupsJwtGrantedAuthoritiesConverter.convert(token)
 						println("Granted groups: $grantedGroups")
 
