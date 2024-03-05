@@ -16,7 +16,6 @@ class AsyncController(
 
 		return asyncWebClient.getDataFromMs(
 			uri = "greetings",
-//			requestBody = EmptyBody(),
 			responseType = getResponseType()
 		)
 	}

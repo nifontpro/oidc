@@ -3,7 +3,6 @@ package ru.nb.server
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.config.core.GrantedAuthorityDefaults
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter
@@ -56,7 +55,9 @@ class SpringSecurityConfig {
 							setAuthoritiesClaimName("groups")
 							setAuthorityPrefix("")
 						}
-						val grantedGroups = groupsJwtGrantedAuthoritiesConverter.convert(token)
+						val grantedGroups = groupsJwtGrantedAuthoritiesConverter.convert(token)?.filter {
+							it.authority.startsWith("ROLE_")
+						}
 						println("Granted groups: $grantedGroups")
 
 						grantedGroups?.let {
@@ -72,9 +73,9 @@ class SpringSecurityConfig {
 		return http.build()
 	}
 
-	@Bean
-	fun grantedAuthorityDefaults(): GrantedAuthorityDefaults {
-		return GrantedAuthorityDefaults("") // Remove the ROLE_ prefix
-	}
+//	@Bean
+//	fun grantedAuthorityDefaults(): GrantedAuthorityDefaults {
+//		return GrantedAuthorityDefaults("") // Remove the ROLE_ prefix
+//	}
 
 }
