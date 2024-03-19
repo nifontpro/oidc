@@ -1,11 +1,11 @@
-package ru.nb.server
+package ru.nb.serverflux
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class ServerApplication
+class ServerFluxApplication
 
 fun main(args: Array<String>) {
-	runApplication<ServerApplication>(*args)
+	runApplication<ServerFluxApplication>(*args)
 }

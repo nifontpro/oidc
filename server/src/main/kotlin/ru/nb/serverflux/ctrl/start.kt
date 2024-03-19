@@ -1,4 +1,4 @@
-package ru.nb.server.ctrl
+package ru.nb.serverflux.ctrl
 
 fun main() {
 	val list = listOf("ROLE_USER", "SYSTEM", "ROLE_ADMIN")

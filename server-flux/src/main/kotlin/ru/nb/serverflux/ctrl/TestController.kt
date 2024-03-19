@@ -1,4 +1,4 @@
-package ru.nb.server.ctrl
+package ru.nb.serverflux.ctrl
 
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController

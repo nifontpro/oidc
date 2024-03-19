@@ -1,4 +1,4 @@
-package ru.nb.server
+package ru.nb.serverflux
 
 import org.springframework.core.convert.converter.Converter
 import org.springframework.security.core.GrantedAuthority
