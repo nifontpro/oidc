@@ -9,8 +9,13 @@ import java.security.Principal
 class TestController {
 
 	@GetMapping("greetings")
-	fun greetings(principal: Principal): Greetings {
+	fun greetings(
+		principal: Principal,
+//		@AuthenticationPrincipal userDetails: UserDetails?,
+	): Greetings {
 		val name = principal.name ?: "Гость"
+//		val name = userDetails?.username ?: "Гость"
+//		println(userDetails)
 		return Greetings(greeting = "Привет, $name")
 	}
 

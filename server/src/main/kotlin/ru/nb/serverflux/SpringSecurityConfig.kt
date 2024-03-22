@@ -2,27 +2,19 @@ package ru.nb.serverflux
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter
 import org.springframework.security.web.SecurityFilterChain
-
 
 @Configuration
 class SpringSecurityConfig {
 
 	@Bean
 	fun filterChain(http: HttpSecurity): SecurityFilterChain {
-
-		// конвертер для настройки spring security
-//		val jwtAuthenticationConverter = JwtAuthenticationConverter()
-		// подключаем конвертер ролей
-//		jwtAuthenticationConverter.apply {
-//			setJwtGrantedAuthoritiesConverter(KCRoleConverter())
-//			setPrincipalClaimName("name")
-//		}
-
 		http
 			.sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
 			.csrf { csrf -> csrf.disable() }
@@ -34,12 +26,9 @@ class SpringSecurityConfig {
 //				auth.anyRequest().hasRole("manage-account")
 			}
 			.oauth2ResourceServer { config ->
-				/*	config.jwt {
-						it.jwtAuthenticationConverter(jwtAuthenticationConverter)
-					}*/
-//				config.jwt(Customizer.withDefaults())
+				config.jwt(Customizer.withDefaults())
 
-				config.jwt { jwt ->
+				/*config.jwt { jwt ->
 					val jwtAuthenticationConverter = JwtAuthenticationConverter().apply {
 						setPrincipalClaimName("preferred_username")
 //						setPrincipalClaimName("name")
@@ -48,10 +37,24 @@ class SpringSecurityConfig {
 
 					jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter { token ->
 						val jwtGrantedAuthoritiesConverter = JwtGrantedAuthoritiesConverter()
-						val grantedScopes = jwtGrantedAuthoritiesConverter.convert(token)
+						// Права по умолчанию
+						val grantedScopes = jwtGrantedAuthoritiesConverter.convert(token) ?: emptyList()
 						println("Granted scopes: $grantedScopes")
 
-						val groupsJwtGrantedAuthoritiesConverter = JwtGrantedAuthoritiesConverter().apply {
+						// Если берем роли из realm_access/roles
+						val realmAccess = token.getClaimAsMap("realm_access")
+						val roles = realmAccess["roles"] as? List<*>
+						val grantedRoles = roles?.let { roleList ->
+							roleList
+								.mapNotNull { it as? String }
+								.filter { it.startsWith("ROLE_") }
+								.map { SimpleGrantedAuthority(it) }
+						} ?: emptyList()
+
+						println("Granted roles: $grantedRoles")
+						val allGranted = grantedScopes + grantedRoles
+
+						*//*val groupsJwtGrantedAuthoritiesConverter = JwtGrantedAuthoritiesConverter().apply {
 							setAuthoritiesClaimName("groups")
 							setAuthorityPrefix("")
 						}
@@ -62,15 +65,45 @@ class SpringSecurityConfig {
 
 						grantedGroups?.let {
 							grantedScopes?.addAll(it)
-						}
+						}*//*
 
-						println("All: $grantedScopes")
-						grantedScopes
-					}
+						println("All: $allGranted")
+						allGranted
+					}*/
 
-				}
+//				}
 			}
 		return http.build()
+	}
+
+	@Bean
+	fun jwtAuthenticationConverter(): JwtAuthenticationConverter {
+		val jwtAuthenticationConverter = JwtAuthenticationConverter().apply {
+			setPrincipalClaimName("preferred_username")
+//						setPrincipalClaimName("name")
+		}
+		jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter { token ->
+			val jwtGrantedAuthoritiesConverter = JwtGrantedAuthoritiesConverter()
+			// Права по умолчанию
+			val grantedScopes = jwtGrantedAuthoritiesConverter.convert(token) ?: emptyList()
+			println("Granted scopes: $grantedScopes")
+
+			// Если берем роли из realm_access/roles
+			val realmAccess = token.getClaimAsMap("realm_access")
+			val roles = realmAccess["roles"] as? List<*>
+			val grantedRoles = roles?.let { roleList ->
+				roleList
+					.mapNotNull { it as? String }
+					.filter { it.startsWith("ROLE_") }
+					.map { SimpleGrantedAuthority(it) }
+			} ?: emptyList()
+
+			println("Granted roles: $grantedRoles")
+			val allGranted = grantedScopes + grantedRoles
+			println("All: $allGranted")
+			allGranted
+		}
+		return jwtAuthenticationConverter
 	}
 
 //	@Bean
